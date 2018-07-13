@@ -58,14 +58,14 @@ struct list_head *current_head = main_head;
 
 
         /*	REVERSE BLOCK FUNC SORT	BEGIN		*/
-        printf("REVERSE NOW\n");
+        printf("***REVERSE NOW***\n");
         reverse(main_head);
         print_list(main_head);
 	/*	REVERSE BLOCK FUNC SORT	END		*/         
         
 
         /*      FREE LIST BLOCK FUNC CLEAR       BEGIN	*/
-        printf("FREE LIST\n");
+        printf("***FREE LIST***\n");
         clear_all(main_head);
         if (list_empty(main_head)){
                 printf("LIST IS EMPTY\n");
@@ -74,4 +74,5 @@ struct list_head *current_head = main_head;
         }
         exit(E_REMOVE);
         /*      FREE LIST BLOCK FUNC CLEAR       END     */
+
 }

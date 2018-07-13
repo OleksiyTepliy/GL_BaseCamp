@@ -71,7 +71,7 @@ unsigned long list_counter(struct list_head *main_head)
 int list_insert_pos(unsigned long pos, struct list_head *main_head)
 {
         unsigned long n = list_counter(main_head);
-        if (pos < 0 || pos > n - 1) {
+        if (pos < 0 || pos > n) {
                 fprintf(stderr, "**CANT ADD** Please provide \
                 valid number between 0 and %lu", n);
                 exit(E_INSERT);
@@ -103,9 +103,9 @@ int list_insert_pos(unsigned long pos, struct list_head *main_head)
 int list_remove_pos(unsigned long pos, struct list_head *main_head)
 {
         unsigned long n = list_counter(main_head);
-        if (pos < 0 || pos > n) {
+        if (pos < 0 || pos > n - 1) {
                 fprintf(stderr, "**CANT REMOVE**, Please provide valid \
-                number between 1 and %lu", n);
+                number between 1 and %lu", n - 1);
                 exit(E_REMOVE);
         }
         /* find position for delition */
@@ -292,11 +292,6 @@ int sort_list(struct list_head *main_head, enum FIELD F, enum ORDER O)
         fprintf(stderr, "**FILED EROOR**\n");
         exit(E_FIELD);
 }
-
-
-
-
-
 
 
 
