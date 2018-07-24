@@ -13,8 +13,10 @@ struct random_param{
 
 struct random_param rv = {13, 2707, 65535, 32533};
 
+// struct random_param rv = {13, 2707, 65535, 32533};
+
 enum pwm {
-	DURATION = 2400U,	// pwm duration
+	DURATION = 600U,	// duration
 	FREQ = 100U	// pwm frequency
 };
 
@@ -38,6 +40,9 @@ void soft_delay(volatile uint16_t N)
 
 void pwm_generator(uint8_t lvl, enum pwm DURATION, enum pwm FREQ)
 {
+	if (lvl < 20) {
+		DURATION /= 2;
+	}
 	uint16_t pwm_period = DURATION / FREQ;
 	while (FREQ--) {
 		/* one period of pwm */
@@ -50,7 +55,7 @@ void pwm_generator(uint8_t lvl, enum pwm DURATION, enum pwm FREQ)
 
 
 uint8_t algorithm(uint16_t r)
-{	// probability   25 20 13 8 7 6 7 6 5 1 1 1 %
+{	// probability   25 20 13 8 7 6 7 6 5 1 1 1 %	min 0 max 65535
 
 	if (r > 49151) {
     		return 100;  // maximum pwm level
