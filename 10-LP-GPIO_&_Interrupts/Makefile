@@ -1,5 +1,5 @@
 TARGET:=tim_isr
-DEPS:=segm
+DEPS:=
 MCU:=atmega328p			# see avr-as --help for full list
 PROGPORT:=/dev/ttyACM0		# see ls /dev | grep tty and 99-Arduino.rules
 
@@ -37,4 +37,3 @@ $(TARGET:=.elf): $(TARGET:=.c) $(addsuffix .o, $(DEPS))
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
-

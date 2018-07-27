@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 volatile uint8_t lvl = 0;	// global variable, sets pwm level
+volatile _Bool flag = 0;
 
 
 /* some magic constants for Linear congruential generator */
@@ -94,19 +95,18 @@ int main(void)
     	TIMSK1 |= (1 << OCIE1A);
     	// set prescaler to 1024, and enable timer
 	TCCR1B |= (1 << CS12) | (1 << CS10);
-	// enable interrupts
-	sei();
 
 	uint16_t rand = (rv.seed);
 
-	while(1)
+    // enable interrupts
+	sei();
+
+	while (1)
 	{
 		rand = random(rand);
-		cli();		/* Disable interrupts -- as memory barrier */
 		lvl = algorithm(rand);	// update pwm level
-		set_sleep_mode(SLEEP_MODE_PWR_SAVE);
-		sleep_enable();	/* Set SE (sleep enable bit) */
-		sei();  	/* Enable interrupts. We want to wake up, don't we? */
+        flag = 1;
+        while (flag);
 	}
 }
 
@@ -117,68 +117,7 @@ int main(void)
  */
 ISR (TIMER1_COMPA_vect)
 {
-	//TCCR0B = 0x00;	//turn off timer
 	//TCNT0 = 0x00; // reset Timer0 counter register
-	//TCCR0B |= (1 << CS01) | (1 << CS00);		// turn on again
 	OCR0A = (lvl * 255) / 100;	// set new pwm level
+    flag = 0;
 }
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// OCR1A = 0x9B;		// 20ms period, set top to decimal 155
-    	// TCCR1B |= (1 << WGM12);	// Mode 4, CTC on OCR1A as a TOP level, timer overflows interrupt generated
-
-
-	
-	// /*timer/counter 1 output compare A match interrupt is enabled. The corresponding interrupt vector is
-	// executed when the OCF1A flag, located in TIFR1, is set. */
-    	// TIMSK1 |= (1 << OCIE1A);
-    	
-	// TCCR1B |= (1 << CS12) | (1 << CS10);	// set prescaler to 1024
-    	// sei();		// enable interrupts	
