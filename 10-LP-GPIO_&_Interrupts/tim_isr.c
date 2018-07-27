@@ -8,7 +8,7 @@
 #include <util/delay.h>
 #include <stdint.h>
 
-volatile uint8_t lvl = 0;	// global variable sets pwm level
+volatile uint8_t lvl = 0;	// global variable, sets pwm level
 
 
 /* some magic constants for Linear congruential generator */
