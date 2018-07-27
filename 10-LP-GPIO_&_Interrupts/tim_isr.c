@@ -105,8 +105,8 @@ int main(void)
 	{
 		rand = random(rand);
 		lvl = algorithm(rand);	// update pwm level
-        flag = 1;
-        while (flag);
+		flag = 1;
+        	while (flag);
 	}
 }
 
@@ -119,5 +119,5 @@ ISR (TIMER1_COMPA_vect)
 {
 	//TCNT0 = 0x00; // reset Timer0 counter register
 	OCR0A = (lvl * 255) / 100;	// set new pwm level
-    flag = 0;
+    	flag = 0;
 }
