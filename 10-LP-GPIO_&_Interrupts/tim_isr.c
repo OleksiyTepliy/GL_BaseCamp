@@ -20,15 +20,28 @@ struct random_param{
 	uint16_t seed;
 };
 
-
+/* struct for custom parameters */
 struct random_param rv = {13, 2707, 65535, 32533};
 
 
+
+/**
+ * Linear_congruential_generator 
+ * @x:	takes previous number as a seed for next
+ * 
+ */
 uint16_t random(uint16_t x)
 {
 	return (rv.multiplier * x + rv.increment) % (rv.modulus);
 }
 
+
+/**
+ * Probability distribution  
+ * function takes a random number and return pwm lvl
+ * @r:	random number from generator
+ * 
+ */
 uint8_t algorithm(uint16_t r)
 {	// probability   25 20 13 8 7 6 7 6 5 1 1 1 %	min 0 max 65535
 	if (r > 49151) {
@@ -107,8 +120,6 @@ ISR (TIMER1_COMPA_vect)
 	//TCCR0B = 0x00;	//turn off timer
 	//TCNT0 = 0x00; // reset Timer0 counter register
 	//TCCR0B |= (1 << CS01) | (1 << CS00);		// turn on again
-
-	sleep_disable();	/* Disable sleeps for safety */
 	OCR0A = (lvl * 255) / 100;	// set new pwm level
 }
 
