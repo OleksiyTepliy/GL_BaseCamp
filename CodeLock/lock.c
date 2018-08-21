@@ -21,7 +21,6 @@ enum state lock_state;
 enum state key_state;
 
 // eeprom key storage
-//uint8_t EE_DEF_KEY[KEY_SIZE] EEMEM  = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
 uint8_t EEMEM EE_DEF_KEY[KEY_SIZE];
 // ram storage
 uint8_t RAM_DEF_KEY[KEY_SIZE] = {0x24, 0x24, 0x24, 0x24, 0x24, 0x24, 0x24, 0x24};
@@ -51,11 +50,9 @@ bool line_read(void)
 	return val;
 }
 
-
 void clear_buff()
 {
 	rdbuff[0] = '\0';
-	//wrbuff[0] = '\0';
 }
 
 void _lock()
@@ -92,9 +89,9 @@ bool key_compare(uint8_t compared_key[])
 int main()
 {
 	/* We use internal pullup resitor for 1-wire line */
-	DDRB = (1 << 1) | (1 << 3);	// pin PB1, PB3 , arduino pin9 pin11
-	PORTB |= (1 << 0);	// set 1wire pin8 to 1
-	DDRD = (1 << 6) | (1 << 7); // PD6 PD7 to output
+	DDRB = (1 << 1) | (1 << 3);	// output pin9, pin11
+	PORTB |= (1 << 0);	// 1wire pin8
+	DDRD = (1 << 6) | (1 << 7); // PD6 PD7 LED pins
 	PORTD &= (~(1 << 6)); // turn off green led
 	PORTD &= (~(1 << 7)); // turn off red led
 
@@ -103,25 +100,21 @@ int main()
 	TCCR1A = 0; // reset Timer Control Register A
         TCCR1B = 0; // reset Timer Control Register B
 
-	DDRB |= (1 << DDB2); // PB2 is now an output pin10
+	DDRB |= (1 << DDB2); // output pin10
 
 	/* Clear OC1A/OC1B on compare match, set OC1A/OC1B at
 	BOTTOM (Non-inverting mode) */
-	TCCR1A |= (1 << COM1A1)|(1 << COM1B1); // set none-inverting mode
+	TCCR1A |= (1 << COM1A1)|(1 << COM1B1);
 
 	/* SET MODE 14 Fast PWM ICR1 BOTTOM */
 	// WGM1[3] = 1 WGM1[2] = 1 WGM1[1] = 1 ICR1 = TOP
 	TCCR1A |= (1 << WGM11);
 	TCCR1B |= (1 << WGM12) | (1 << WGM13);
 
-	// atomic ICR1L and ICR1H
 	ICR1 = 1250 - 1; // Set TOP to 40000
+	OCR1B = 40;
 
-	// atomic OCR1BL and OCR1BH
-	OCR1B = 40; // min
-	//OCR1B = 135; // max
-
-	// start timer prescaler 256 
+	// start timer, prescaler 256, close lock
 	TCCR1B |= (1 << CS12);
 	_delay_ms(600);
 	TCCR1B &= ~(1 << CS12);
@@ -130,12 +123,9 @@ int main()
 
 				/*** UART INIT BEGIN***/
 	uart_init();
-	// set_sleep_mode(SLEEP_MODE_IDLE);
-	// sleep_enable();
 	sei();
 	uart_put("\n\nHello from avr\n\n");
 				/*** UART INIT END***/	
-
 
 	ow_Pin pin;
 	ow_Pin_init(&pin, &line_low, &line_release, &line_read, &soft_delay_us, 1, 15, 60, 2);
@@ -150,43 +140,29 @@ int main()
 	lock_state = LOCKED;
 	key_state = key_compare(RAM_DEF_KEY) ? DEFAULT : KEY_SET;
 
-				/*** SET TO DEFAULT ***/
-	//eeprom_write_block((void*) &RAM_DEF_KEY[0], (const void*) &EE_DEF_KEY[0], KEY_SIZE);
-
 	while (1)
 	{
 				/*** UART COMMANDS BEGIN ***/
-
-		// 28 ff 5f 17 c0 17 02 3f
-		// 28 ff 2a 11 c0 17 02 3f
 
 		if (atomic_str_eq((char *) rdbuff, "show key")) {
 			uint8_t var_key[KEY_SIZE + 1]; // for proper string output
 			eeprom_read_block((void*) &var_key[0], (const void*) &EE_DEF_KEY[0], KEY_SIZE);
 			var_key[KEY_SIZE] = '\0';
 			uart_put((char *) var_key);
-			//clear_buff();
-		}
-
-		else if (atomic_str_eq((char *) rdbuff, "key state")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "key state")) {
 			uart_put(key[key_state]);
-			//clear_buff();
-		}
-		
-		else if (atomic_str_eq((char *) rdbuff, "set key")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "set key")) {
 			key_state = SET_NEW;
 			uart_put(key[key_state]);
-			//clear_buff();
-		} 
-		
-		else if (atomic_str_eq((char *) rdbuff, "reset key")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "reset key")) {
 			key_state = DEFAULT;
 			eeprom_write_block((void*) &RAM_DEF_KEY[0], (void*) &EE_DEF_KEY[0], KEY_SIZE);
 			uart_put(key[key_state]);
-			//clear_buff();
-		} 
-		
-		else if (atomic_str_eq((char *) rdbuff, "lock")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "lock")) {
 			if (lock_state == UNLOCKED) {
 				_lock();
 				lock_state = LOCKED;
@@ -194,10 +170,8 @@ int main()
 			else {
 				uart_put(lock[lock_state]);
 			}
-			//clear_buff();
-		} 
-		
-		else if (atomic_str_eq((char *) rdbuff, "unlock")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "unlock")) {
 			if (lock_state == LOCKED) {
 				_unlock();
 				lock_state = UNLOCKED;
@@ -205,25 +179,16 @@ int main()
 			else {
 				uart_put(lock[lock_state]);
 			}
-			//clear_buff();
-		} 
-		
-		else if (atomic_str_eq((char *) rdbuff, "state")) {
+			clear_buff();
+		} else if (atomic_str_eq((char *) rdbuff, "state")) {
 			uart_put(lock[lock_state]);
-			//clear_buff();
-		} 
-		
-		else if (atomic_str_eq((char *) rdbuff, "temp")) {
-			// show temp from ds18b20
-			//clear_buff();
-		}
-
-		else {
+			clear_buff();
+		} else {
 			uart_put("Unknown command\n");
 			uart_put(rdbuff);
+			clear_buff();
 		}
-
-						
+				
 				/*** UART COMMANDS END ***/
 
 		err = ow_cmd_readrom(&pin, ibutton_id, &crc, true, false);
@@ -236,8 +201,7 @@ int main()
 				PORTD |= (1 << 6); // pin6 GREEN ON. KEY INJECTED IN EEPROM
 				_delay_ms(2000);
 				PORTD &= ~(1 << 6); // PD6 GREEN OFF.
-			}
-			else {
+			} else {
 				bool result = key_compare(ibutton_id);
 				/* if keys are the same */
 				if (result) {
