@@ -1,10 +1,9 @@
 #include "onewire.h"
 #include <avr/io.h>
 #include "uart.h"
-#define 	F_CPU   16000000UL
+#define F_CPU 16000000UL
 #include <util/delay.h>
 #include <stdbool.h>
-
 #include <avr/eeprom.h>
 
 #define KEY_SIZE 8
