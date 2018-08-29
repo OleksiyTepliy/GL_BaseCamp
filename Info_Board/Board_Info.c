@@ -139,7 +139,7 @@ int main(void)
 			if (temp < 2) {
 				uint8_t buffer[10];
 				sprintf(buffer, "0x%04hx\n", temp);
-				uart_send(buffer);
+				//uart_send(buffer);
 				max7219_cmd_to(ALL, MAX7219_INTENSITY_REG, 0x01);
 			} else {
 				max7219_cmd_to(ALL, MAX7219_INTENSITY_REG, 0x15);
