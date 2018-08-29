@@ -16,13 +16,10 @@ void adc_init()
 	ADCSRA |= (1 << ADPS0) | (1 << ADPS1) | (1 << ADPS2); // ADC Prescaler Select to 128
 	//ADCSRB = 0; // free mode 
 }
-	// ADCSRA |=(1<<ADEN)|(1<<ADFR)|(1<<ADIE)|(1<<ADSC)|(3<<ADPS0); // set 0xFF
-	// ADMUX  |=(1<<REFS0)|(1<<ADLAR);
 
 ISR(ADC_vect, ISR_BLOCK)
 {
 	temp = ADCH;
 	flags[U_PHOTO] = true;
 }
-//ADCSRA |= 1 << ADSC start conversion
 

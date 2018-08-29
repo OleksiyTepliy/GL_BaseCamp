@@ -34,7 +34,7 @@ enum display_modes {
 	CLOCK_HH = 0,
 	CLOCK_SS,
 	STRING,
-    TEMP,
+    	TEMP,
 	TEST,
 	CANDLE
 };

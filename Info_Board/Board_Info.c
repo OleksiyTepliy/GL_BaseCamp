@@ -6,12 +6,12 @@
 #include <avr/eeprom.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "spi.h"
-#include "front.h"
-#include "MAX7219.h"
-#include "uart.h"
-#include "process_cmd.h"
-#include "adc.h"
+#include "spi/spi.h"
+#include "fronts/front.h"
+#include "MAX7219/MAX7219.h"
+#include "uart/uart.h"
+#include "process_cmd/process_cmd.h"
+#include "adc/adc.h"
 
 volatile uint16_t timer = 0; // time counter
 volatile bool flags[U_SIZE] = {0};
