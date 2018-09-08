@@ -292,30 +292,3 @@ int sort_list(struct list_head *main_head, enum FIELD F, enum ORDER O)
         fprintf(stderr, "**FILED EROOR**\n");
         exit(E_FIELD);
 }
-
-
-
-// some problem with pointers, func hung up.
-// int sort_list(const struct list_head *main_head, int param)
-// {       // bubble sort
-//         struct list_head *i, *j;
-//         int swap_count;
-//         for (i = main_head->next; i != main_head; i = i->next) {
-//                 swap_count = 0;
-//                 for (j = main_head->next; j != main_head->prev; j = j->next) {
-//                         if (list_entry(j)->weight > list_entry(j->next)->weight) {
-//                                 struct list_head *pos; struct mylist *node_ptr;
-//                                 swap_safe(j, j->next);
-//                                 ++swap_count;
-//                                 for (pos = main_head->next; pos != main_head; pos = pos->next) {
-//                                         node_ptr = list_entry(pos);
-//                                 }
-//                         }
-//                 }
-//                 if (swap_count == 0) {
-//                         return E_OK;
-//                 }
-//         }
-//         fprintf(stderr, "**SORT** ERR\n");
-//         exit(E_SORT);
-// }
